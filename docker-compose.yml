@@ -1,0 +1,21 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: clockwork-upload-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/html:/usr/share/nginx/html:ro
+    depends_on:
+      - uploader
+
+  uploader:
+    build: ./uploader
+    container_name: clockwork-upload-uploader
+    environment:
+      - UPLOAD_DIR=/uploads
+      - MAX_UPLOAD_MB=50
+    volumes:
+      # 🔥 Directorio del HOST que monitoriza FIM
+      - /srv/uploads:/uploads
