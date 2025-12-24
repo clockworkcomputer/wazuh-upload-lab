@@ -18,20 +18,20 @@ def health():
 @app.post("/upload")
 def upload():
     if "file" not in request.files:
-        abort(400, "missing file field")
+        abort(400, "ERROR: missing file field")
 
     f = request.files["file"]
     if not f.filename:
-        abort(400, "empty filename")
+        abort(400, "ERROR: empty filename")
 
     filename = secure_filename(f.filename)
     if not filename:
-        abort(400, "invalid filename")
+        abort(400, "ERROR: invalid filename")
 
     dst = os.path.join(UPLOAD_DIR, filename)
     f.save(dst)
 
-    return f"uploaded: {filename}\n", 200
+    return f"OK: archivo subido -> {filename}", 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
