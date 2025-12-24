@@ -65,6 +65,10 @@
       letter-spacing: .08em;
     }
     .btn:hover { opacity: .92; }
+    .btn:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
     .footer {
       margin-top: 14px;
       font-size: 12px;
@@ -73,6 +77,58 @@
     }
     a { color: inherit; text-decoration: none; }
     code { color: #fff; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal {
+      width: min(520px, 92vw);
+      border: 1px solid #222;
+      border-radius: 16px;
+      background: #0b0b0b;
+      box-shadow: 0 10px 40px rgba(0,0,0,.6);
+      padding: 18px;
+    }
+    .modal h2 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    .modal p {
+      margin: 0 0 14px 0;
+      color: #cfcfcf;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn-secondary {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #2a2a2a;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn-primary {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 0;
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+      font-weight: 800;
+    }
   </style>
 </head>
 <body>
@@ -90,9 +146,9 @@
     </div>
 
     <div class="upload">
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <input name="file" type="file" required />
-        <button class="btn" type="submit">UPLOADS</button>
+      <form id="uploadForm" enctype="multipart/form-data">
+        <input id="fileInput" name="file" type="file" required />
+        <button id="uploadBtn" class="btn" type="submit">UPLOAD</button>
       </form>
     </div>
 
@@ -100,5 +156,86 @@
       Los archivos se guardan en <code>/srv/uploads</code> (host) → FIM (554) → Kaspersky/VirusTotal.
     </div>
   </div>
+
+  <!-- Modal -->
+  <div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <h2 id="modalTitle">Upload completado</h2>
+      <p id="modalBody">OK</p>
+      <div class="modal-actions">
+        <button id="modalOk" class="btn-primary">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const fileInput = document.getElementById("fileInput");
+    const uploadBtn = document.getElementById("uploadBtn");
+
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalOk = document.getElementById("modalOk");
+
+    function openModal(title, body) {
+      modalTitle.textContent = title;
+      modalBody.textContent = body;
+      modalBackdrop.style.display = "flex";
+      modalBackdrop.setAttribute("aria-hidden", "false");
+      modalOk.focus();
+    }
+
+    function closeModal() {
+      modalBackdrop.style.display = "none";
+      modalBackdrop.setAttribute("aria-hidden", "true");
+      // reset para permitir subir otro en la misma pantalla
+      form.reset();
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = "UPLOAD";
+    }
+
+    modalOk.addEventListener("click", closeModal);
+
+    // Cerrar modal con ESC
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalBackdrop.style.display === "flex") {
+        closeModal();
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        openModal("Error", "Selecciona un archivo antes de subirlo.");
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = "SUBIENDO...";
+
+      try {
+        const fd = new FormData();
+        fd.append("file", fileInput.files[0]);
+
+        const res = await fetch("/upload", {
+          method: "POST",
+          body: fd
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+          openModal("Error al subir", text || ("HTTP " + res.status));
+          return;
+        }
+
+        openModal("Upload completado", text.trim() || "Archivo subido correctamente.");
+      } catch (err) {
+        openModal("Error", "No se pudo subir el archivo. Revisa conectividad/servicio.");
+      }
+    });
+  </script>
 </body>
 </html>
