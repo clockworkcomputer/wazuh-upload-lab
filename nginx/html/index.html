@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Clockwork Upload Lab</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+    }
+    .card {
+      width: min(720px, 92vw);
+      border: 1px solid #222;
+      border-radius: 18px;
+      padding: 28px;
+      background: #0b0b0b;
+      box-shadow: 0 10px 40px rgba(0,0,0,.4);
+    }
+    .header {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .logo {
+      width: 120px;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid #222;
+      background: #000;
+    }
+    h1 { font-size: 20px; margin: 0; }
+    p { margin: 6px 0 0 0; color: #cfcfcf; font-size: 14px; }
+    .upload {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px dashed #2a2a2a;
+      background: #050505;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #222;
+      background: #0a0a0a;
+      color: #fff;
+    }
+    .btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 0;
+      cursor: pointer;
+      background: #ffffff;
+      color: #000;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+    .btn:hover { opacity: .92; }
+    .footer {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #9a9a9a;
+      text-align: center;
+    }
+    a { color: inherit; text-decoration: none; }
+    code { color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <a href="https://www.youtube.com/c/ClockworkComputerIP" target="_blank" rel="noreferrer">
+        <img class="logo"
+          src="https://blogger.googleusercontent.com/img/a/AVvXsEjuquj9lFaN9zfg8H5FofNIUKAHWWRiOUbDhHragpU14TfF6RYKxb5w62mfAClxDkDrzCMAilRatibcoWFbuqMnXMBh30p_sfbxp4D2gUny70NbjyHLrs42VXeBB4Qtc8NovIS_DqIU5iq3dMMx1TuNZkW70MeW8Ryemwk_tDv6iKZi9ngKfaskUG1yCWo=s1600"
+          alt="Clockwork Computer Logo">
+      </a>
+      <div>
+        <h1>Clockwork Upload Lab</h1>
+        <p>Sube un archivo y deja que Wazuh FIM + integraciones lo detecten.</p>
+      </div>
+    </div>
+
+    <div class="upload">
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <input name="file" type="file" required />
+        <button class="btn" type="submit">UPLOADS</button>
+      </form>
+    </div>
+
+    <div class="footer">
+      Los archivos se guardan en <code>/srv/uploads</code> (host) → FIM (554) → Kaspersky/VirusTotal.
+    </div>
+  </div>
+</body>
+</html>
